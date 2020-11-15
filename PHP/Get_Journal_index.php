@@ -16,6 +16,24 @@
       letter-spacing: 5;
       font-size: 50px;
     }
+
+    td,
+    tr {
+      padding-right: 10px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      text-align: left;
+    }
+
+    th {
+      text-align: left;
+      text-decoration: underline;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 10px;
+    }
   </style>
 </head>
 
@@ -106,6 +124,10 @@
 
   // create array to hold drug names for patient
   $drugNames = array();
+  echo "<div style='background-color:yellow; border:1px solid black'>";
+  echo "<table>";
+  echo '<tr>';
+  echo '<th>Journal</th><th>Vårdgivare</th><th>besöksdatum</th>';
 
   foreach ($arr_encounter as $key => $value) {
     // assign variable url to pull out each encounter
@@ -127,69 +149,48 @@
     $error = curl_error($ch);
     curl_close($ch);
 
-    echo "<div style='background-color:yellow; border:1px solid black'>";
 
-
+    $Journalinfo = array();
     // ---- TO DO ------ if loop to check patient from POST
     if ($response['data']['patient'] == 'Benny') {
-      //get size of array
-      $lengthDrugPr = (sizeof($response['data']['drug_prescription']));
-      //echo print_r($response['data']['drug_prescription']['0']['drug_name']);
-      for ($i = 0; $i < $lengthDrugPr; $i++) {
-        array_push($drugNames, $response['data']['drug_prescription'][$i]['drug_name']);
-        //add more info that is displayed with drug name
-        array_push($drugNames, $response['data']['drug_prescription'][$i]['dosage']);
-        array_push($drugNames, substr($response['data']['drug_prescription'][$i]['creation'], 0, 11));
-        //pull out first 10 characters in string on creation date to display
-        //https://www.codegrepper.com/code-examples/delphi/get+the+first+10+characters+of+a+string+in+php
-        //$result = substr("Hello How are you", 0, 5); //first 5 chars "Hello"
-      }
+      $journalID = $response['data']['name'];
+
+      array_push($Journalinfo, $response['data']['name']);
+      array_push($Journalinfo, $response['data']['practitioner_name']);
+      array_push($Journalinfo, $response['data']['encounter_date']);
+
+      echo "<tr>";
+      echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['0'] . "</td></a>";
+      echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['1'] . "</td></a>";
+      echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['2'] . "</td></a></tr>";
+      echo '</tr>';
     }
   }
-  /*
-// save array of unique drug names
-$drugNamesUnique = array_unique($drugNames);
-$lengthDrugUnique = sizeof($drugNamesUnique);
-echo print_r($drugNamesUnique);
-echo '<form action="Get PRescriptionlist.php" method="POST">';
-echo '<select name="drug">';
-  for ($i = 0; $i < $lengthDrugUnique; $i++) {
-    echo '<option value=' . $drugNamesUnique[$i] . ' >' . $drugNamesUnique[$i] . '</option>';
-  }
-  */
+  echo '</tr>';
+  echo "</table>";
 
-  //print all drugs with dosage
-  //change from drop down here to <ol>, <li> links
-  $lengthDrugNames = sizeof($drugNames);
-  echo print_r($drugNames);
-  echo '<form action="Get PRescriptionlist.php" method="POST">';
+
+  //>>>>>>>> Use previous code for getting all encounters and sort out patient
+  //>>>>>>>> For each encounter tied to patient
+  //>>>>>>>> Order by date 
+  //>>>>>>>> data,practitioner_name
+  //>>>>>>>> data,encounter_date,
+  //>>>>>>>> data,symptoms,0,complaint
+  //>>>>>>>> data,diagnosis,0,diagnosis
+  //>>>>>>>> data,drug_prescription,0,drug_name
+
+  //change vars
+  //$lengthDrugNames = sizeof($drugNames);
+  //echo print_r($drugNames);
+  /*   echo '<form action="Get PRescriptionlist.php" method="POST">';
   echo '<select name="drug">';
   for ($i = 0; $i < $lengthDrugNames; $i++) {
     echo '<option value=' . $drugNames[$i] . ' >' . $drugNames[$i] . '</option>';
+    echo '<option value=' . $Journals[$i] . ' >' . $Journals[$i] . '</option>';
   }
-  // could use info in $response['data']['drug_prescription'][$i]['period'] to calculate when Rx is no longer active
-  // and only display active Rx - NOT IMPLEMENTED NOW
-
-  // Dropdown prescription 
-  // ---- TO DO ------ create hidden input for sending patient to prescription
-  /*
-  echo '<form action="Get PRescriptionlist.php" method="POST">';
-    echo '<select name="drug">';
-  for ($i = 0; $i < $lengthDrugPr; $i++) {
-    echo '<option value=' . $response['data']['drug_prescription'][$i]['drug_name'] . ' >' . $response['data']['drug_prescription'][$i]['drug_name'] . '</option>';
-  }*/
-  //$encounter = $arr_encounter[1];
-
-
-  /*     foreach ($value as $valuekey => $valuevalue) {
-      echo $valuekey . " " . $valuevalue . "<br>";
-      //echo '<option value=' . $valuevalue['drug_name'] . ' >' . $valuevalue['drug_name'] . '</option>';
-    } */
-
-  //echo '<option value=' . $response['data']['drug_prescription']['0']['drug_name'] . ' >' . $response['data']['drug_prescription']['0']['drug_name'] . '</option>';
   echo '</select>';
   echo '</form>';
-  echo "</div>";
+  echo "</div>"; */
 
 
   if (!empty($error_no)) {

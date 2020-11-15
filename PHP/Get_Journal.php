@@ -16,6 +16,15 @@
       letter-spacing: 5;
       font-size: 50px;
     }
+
+    #journal {
+      margin-bottom: 10px;
+      background-color: yellow;
+      border: 1px solid black;
+      padding: 5px;
+      padding-left: 15px;
+
+    }
   </style>
 </head>
 
@@ -127,12 +136,20 @@
     $error = curl_error($ch);
     curl_close($ch);
 
-    echo "<div style='background-color:yellow; border:1px solid black'>";
 
-
-    // ---- TO DO ------ if loop to check patient from POST
-    if ($response['data']['patient'] == 'Benny') {
-      //get size of array
+    $Journals = array();
+    // ---- TO DO ------ if loop to check patient from GET
+    if ($response['data']['name'] == $_GET['journalID']) {
+      // Get patients data
+      //if (isset($_GET['patient']))
+      echo "<div id='journal'>";
+      $encounterJournal = $response['data'];
+      array_push($Journals, $response['data']['name']);
+      array_push($Journals, $response['data']['practitioner_name']);
+      array_push($Journals, $response['data']['patient']);
+      array_push($Journals, $response['data']['encounter_date']);
+      array_push($Journals, $response['data']['symptoms']['0']['complaint']);
+      array_push($Journals, $response['data']['diagnosis']['0']['diagnosis']);
       $lengthDrugPr = (sizeof($response['data']['drug_prescription']));
       //echo print_r($response['data']['drug_prescription']['0']['drug_name']);
       for ($i = 0; $i < $lengthDrugPr; $i++) {
@@ -140,12 +157,26 @@
         //add more info that is displayed with drug name
         array_push($drugNames, $response['data']['drug_prescription'][$i]['dosage']);
         array_push($drugNames, substr($response['data']['drug_prescription'][$i]['creation'], 0, 11));
-        //pull out first 10 characters in string on creation date to display
-        //https://www.codegrepper.com/code-examples/delphi/get+the+first+10+characters+of+a+string+in+php
-        //$result = substr("Hello How are you", 0, 5); //first 5 chars "Hello"
       }
+      $lengthDrugNames = sizeof($drugNames);
+      // Add if empty - Show nothing
+      echo '<p style="font-weight:900;">Journal: ' . $encounterJournal['name'] . '</p>';
+      echo '<p>Besöksdatum: ' . $encounterJournal['encounter_date'] . '</p>';
+      echo '<p>Vårdgivare: ' . $encounterJournal['practitioner_name'] . '</p>';
+      echo '<p>Patient: ' . $encounterJournal['patient'] . '</p>';
+      echo '<p>Symptom: ' . $Journals['4'] . '</p>';
+      echo '<p>Diagnos: ' . $Journals['5'] . '</p>';
+      echo '<p>Förskrivet recept: ' . $drugNames['0'] . '</p>';
+      echo '<p>Förskriven dos: ' . $drugNames['1'] . '</p>';
+      echo '<p>Förskriven dos: ' . $drugNames['2'] . '</p>';
     }
+    echo "</div>";
   }
+
+
+  //>>>>> Add Prescription
+  //>>>>> Add Vitals
+
   /*
 // save array of unique drug names
 $drugNamesUnique = array_unique($drugNames);
@@ -157,16 +188,24 @@ echo '<select name="drug">';
     echo '<option value=' . $drugNamesUnique[$i] . ' >' . $drugNamesUnique[$i] . '</option>';
   }
   */
+  //>>>>>>>> Use previous code for getting all encounters and sort out patient
+  //>>>>>>>> For each encounter tied to patient
+  //>>>>>>>> Order by date 
+  //>>>>>>>> data,practitioner_name
+  //>>>>>>>> data,encounter_date,
+  //>>>>>>>> data,symptoms,0,complaint
+  //>>>>>>>> data,diagnosis,0,diagnosis
+  //>>>>>>>> data,drug_prescription,0,drug_name
 
-  //print all drugs with dosage
-  //change from drop down here to <ol>, <li> links
-  $lengthDrugNames = sizeof($drugNames);
+  //change vars
+  /*   $lengthDrugNames = sizeof($drugNames);
   echo print_r($drugNames);
   echo '<form action="Get PRescriptionlist.php" method="POST">';
   echo '<select name="drug">';
   for ($i = 0; $i < $lengthDrugNames; $i++) {
     echo '<option value=' . $drugNames[$i] . ' >' . $drugNames[$i] . '</option>';
-  }
+    echo '<option value=' . $Journals[$i] . ' >' . $Journals[$i] . '</option>';
+  } */
   // could use info in $response['data']['drug_prescription'][$i]['period'] to calculate when Rx is no longer active
   // and only display active Rx - NOT IMPLEMENTED NOW
 
@@ -187,9 +226,9 @@ echo '<select name="drug">';
     } */
 
   //echo '<option value=' . $response['data']['drug_prescription']['0']['drug_name'] . ' >' . $response['data']['drug_prescription']['0']['drug_name'] . '</option>';
-  echo '</select>';
+  /* echo '</select>';
   echo '</form>';
-  echo "</div>";
+  echo "</div>"; */
 
 
   if (!empty($error_no)) {
