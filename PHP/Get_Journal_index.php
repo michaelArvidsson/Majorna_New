@@ -125,6 +125,7 @@
   // create array to hold drug names for patient
   $drugNames = array();
   echo "<div style='background-color:yellow; border:1px solid black'>";
+  echo "<h3>Patientjournaler för: INSERT_POST </h3>";
   echo "<table>";
   echo '<tr>';
   echo '<th>Journal</th><th>Vårdgivare</th><th>besöksdatum</th>';
