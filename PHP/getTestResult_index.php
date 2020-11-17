@@ -16,24 +16,6 @@
       letter-spacing: 5;
       font-size: 50px;
     }
-
-    td,
-    tr {
-      padding-right: 10px;
-      padding-top: 10px;
-      padding-bottom: 10px;
-      text-align: left;
-    }
-
-    th {
-      text-align: left;
-      text-decoration: underline;
-    }
-
-    table {
-      border-collapse: collapse;
-      margin: 10px;
-    }
   </style>
 </head>
 
@@ -94,7 +76,10 @@
   echo print_r($response) . "</pre><br>";
   echo "</div>";
 
-  $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter');
+  //$ch = curl_init($baseurl . 'api/resource/Lab%20Test/LP-00004');
+
+  //get array of all lab tests
+  $ch = curl_init($baseurl . 'api/resource/Lab%20Test');
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
   curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
@@ -112,27 +97,26 @@
   $error = curl_error($ch);
   curl_close($ch);
 
+  //echo print_r($response);
 
-  //create an array of encounter names
-  $lengthEncArr = sizeof($response['data']);
-  $arr_encounter = array();
-  for ($i = 0; $i < $lengthEncArr; $i++) {
-    echo $response["data"][$i]["name"];
-    array_push($arr_encounter, $response["data"][$i]["name"]);
+  //create an array of all all lab tests
+  //use lab test name in url to pull out each test and check if it matches the logged-in patient
+  $lengthLabTestsArr = sizeof($response['data']);
+  $arr_labTests = array();
+  for ($i = 0; $i < $lengthLabTestsArr; $i++) {
+    //echo $response["data"][$i]["name"];
+    array_push($arr_labTests, $response["data"][$i]["name"]);
   }
-  echo print_r($arr_encounter);
-
-  // create array to hold drug names for patient
-  $drugNames = array();
-  echo "<div style='background-color:yellow; border:1px solid black'>";
-  echo "<h3>Patientjournaler för: INSERT_POST </h3>";
+  //echo print_r($arr_labTests);
   echo "<table>";
   echo '<tr>';
-  echo '<th>Journal</th><th>Vårdgivare</th><th>besöksdatum</th>';
+  echo '<th>Lab test</th><th>Datum</th><th></th>';
+  // create array to hold drug names for patient
+  //$drugNames=array();
 
-  foreach ($arr_encounter as $key => $value) {
+  foreach ($arr_labTests as $key => $testName) {
     // assign variable url to pull out each encounter
-    $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter/' . $value);
+    $ch = curl_init($baseurl . 'api/resource/Lab%20Test/' . $testName);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
@@ -150,49 +134,39 @@
     $error = curl_error($ch);
     curl_close($ch);
 
+    echo "<div style='background-color:yellow; border:1px solid black'>";
 
-    $Journalinfo = array();
-
-    // Set session ID
+    $labTestInfo = array();
+    // ---- TO DO ------ if loop to check patient from POST
     if ($response['data']['patient'] == 'Benny') {
-      $journalID = $response['data']['name'];
+      //get size of array
+      //$lengthTests=(sizeof($response['data']['0']));
+      //echo print_r($response['data']['drug_prescription']['0']['drug_name']);
+      //for ($i = 0; $i < $lengthDrugPr; $i++) {
 
-      array_push($Journalinfo, $response['data']['name']);
-      array_push($Journalinfo, $response['data']['practitioner_name']);
-      array_push($Journalinfo, $response['data']['encounter_date']);
+      array_push($labTestInfo, $response['data']['lab_test_name']);
+      array_push($labTestInfo, $response['data']['practitioner']);
+      array_push($labTestInfo, $response['data']['result_date']);
+      // foreach ($labTestInfo as $key => $value) {
+      array_push($labTestInfo, $response['data']['normal_test_items']['0']['result_value']);
+      if (!empty($response['data']['normal_test_items']['0']['lab_test_uom'])) {
+        array_push($labTestInfo, $response['data']['normal_test_items']['0']['lab_test_uom']);
+      }
+      if (!empty($response['data']['normal_test_items']['0']['normal_range'])) {
+        array_push($labTestInfo, $response['data']['normal_test_items']['0']['normal_range']);
+      }
+      array_push($labTestInfo, $response['data']['name']);
+    }
 
-      echo "<tr>";
-      echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['0'] . "</td></a>";
-      echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['1'] . "</td></a>";
-      echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['2'] . "</td></a></tr>";
-      echo '</tr>';
+    if (!empty($labTestInfo)) {
+      //echo print_r($labTestInfo);
+      foreach ($labTestInfo as $labtest) {
+        echo "<p>$labtest</p>";
+      }
     }
   }
-  echo '</tr>';
-  echo "</table>";
 
-
-  //>>>>>>>> Use previous code for getting all encounters and sort out patient
-  //>>>>>>>> For each encounter tied to patient
-  //>>>>>>>> Order by date 
-  //>>>>>>>> data,practitioner_name
-  //>>>>>>>> data,encounter_date,
-  //>>>>>>>> data,symptoms,0,complaint
-  //>>>>>>>> data,diagnosis,0,diagnosis
-  //>>>>>>>> data,drug_prescription,0,drug_name
-
-  //change vars
-  //$lengthDrugNames = sizeof($drugNames);
-  //echo print_r($drugNames);
-  /*   echo '<form action="Get PRescriptionlist.php" method="POST">';
-  echo '<select name="drug">';
-  for ($i = 0; $i < $lengthDrugNames; $i++) {
-    echo '<option value=' . $drugNames[$i] . ' >' . $drugNames[$i] . '</option>';
-    echo '<option value=' . $Journals[$i] . ' >' . $Journals[$i] . '</option>';
-  }
-  echo '</select>';
-  echo '</form>';
-  echo "</div>"; */
+  echo "</div>";
 
 
   if (!empty($error_no)) {

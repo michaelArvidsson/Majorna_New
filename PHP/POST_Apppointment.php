@@ -78,7 +78,7 @@
 
   $ch = curl_init($baseurl . 'api/resource/Patient%20Appointment');
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-  curl_setopt($ch, CURLOPT_POSTFIELDS, '{"name":"HLC-APP-2020-00015","patient":"Benny","practitioner":"HLC-PRAC-2020-00010","appointment_type":"Sårvård","appointment_date":"2020-11-20","appointment_time":"09:30:00"}');
+  curl_setopt($ch, CURLOPT_POSTFIELDS, '{"name":"","patient":"Benny","practitioner":"HLC-PRAC-2020-00010","appointment_type":"Sårvård","appointment_date":"2020-11-20","appointment_time":"10:00:00"}');
 
   curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
   curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);

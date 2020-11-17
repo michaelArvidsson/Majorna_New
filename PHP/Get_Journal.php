@@ -85,6 +85,27 @@
   echo print_r($response) . "</pre><br>";
   echo "</div>";
 
+  // Get Vital signs api/resource/Vital Signs [date][patient][BP]
+  // filter and match date against encounters to display
+  $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter');
+  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
+  curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+  curl_setopt($ch, CURLOPT_COOKIEJAR, $cookiepath);
+  curl_setopt($ch, CURLOPT_COOKIEFILE, $cookiepath);
+  curl_setopt($ch, CURLOPT_TIMEOUT, $tmeout);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+  $response = curl_exec($ch);
+  $response = json_decode($response, true);
+
+
+  $error_no = curl_errno($ch);
+  $error = curl_error($ch);
+  curl_close($ch);
+
+  // Get Patient encounters
   $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter');
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -166,12 +187,15 @@
       echo '<p>Patient: ' . $encounterJournal['patient'] . '</p>';
       echo '<p>Symptom: ' . $Journals['4'] . '</p>';
       echo '<p>Diagnos: ' . $Journals['5'] . '</p>';
-      echo '<p>Förskrivet recept: ' . $drugNames['0'] . '</p>';
-      echo '<p>Förskriven dos: ' . $drugNames['1'] . '</p>';
-      echo '<p>Förskriven dos: ' . $drugNames['2'] . '</p>';
+      if (!empty($drugNames)) {
+        echo '<p>Förskrivet recept: ' . $drugNames['0'] . '</p>';
+        echo '<p>Förskriven dos: ' . $drugNames['1'] . '</p>';
+        echo '<p>Förskrivningsdatum: ' . $drugNames['2'] . '</p>';
+      }
     }
     echo "</div>";
   }
+
 
 
   //>>>>> Add Prescription
