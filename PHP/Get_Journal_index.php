@@ -170,29 +170,7 @@
   }
   echo '</tr>';
   echo "</table>";
-
-
-  //>>>>>>>> Use previous code for getting all encounters and sort out patient
-  //>>>>>>>> For each encounter tied to patient
-  //>>>>>>>> Order by date 
-  //>>>>>>>> data,practitioner_name
-  //>>>>>>>> data,encounter_date,
-  //>>>>>>>> data,symptoms,0,complaint
-  //>>>>>>>> data,diagnosis,0,diagnosis
-  //>>>>>>>> data,drug_prescription,0,drug_name
-
-  //change vars
-  //$lengthDrugNames = sizeof($drugNames);
-  //echo print_r($drugNames);
-  /*   echo '<form action="Get PRescriptionlist.php" method="POST">';
-  echo '<select name="drug">';
-  for ($i = 0; $i < $lengthDrugNames; $i++) {
-    echo '<option value=' . $drugNames[$i] . ' >' . $drugNames[$i] . '</option>';
-    echo '<option value=' . $Journals[$i] . ' >' . $Journals[$i] . '</option>';
-  }
-  echo '</select>';
-  echo '</form>';
-  echo "</div>"; */
+  echo "</div>";
 
 
   if (!empty($error_no)) {

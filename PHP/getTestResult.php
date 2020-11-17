@@ -16,6 +16,33 @@
       letter-spacing: 5;
       font-size: 50px;
     }
+
+    td,
+    tr {
+      padding-right: 10px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      text-align: left;
+    }
+
+    th {
+      text-align: left;
+      text-decoration: underline;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 10px;
+    }
+
+    #journal {
+      margin-bottom: 10px;
+      background-color: yellow;
+      border: 1px solid black;
+      padding: 5px;
+      padding-left: 15px;
+
+    }
   </style>
 </head>
 
@@ -71,11 +98,6 @@
     echo "</div>";
   }
 
-  echo "<div style='background-color:lightgray; border:1px solid black'>";
-  echo '$response<br><pre>';
-  echo print_r($response) . "</pre><br>";
-  echo "</div>";
-
   //$ch = curl_init($baseurl . 'api/resource/Lab%20Test/LP-00004');
 
   //get array of all lab tests
@@ -97,8 +119,6 @@
   $error = curl_error($ch);
   curl_close($ch);
 
-  //echo print_r($response);
-
   //create an array of all all lab tests
   //use lab test name in url to pull out each test and check if it matches the logged-in patient
   $lengthLabTestsArr = sizeof($response['data']);
@@ -108,9 +128,7 @@
     array_push($arr_labTests, $response["data"][$i]["name"]);
   }
   //echo print_r($arr_labTests);
-  echo "<table>";
-  echo '<tr>';
-  echo '<th>Lab test</th><th>Datum</th><th></th>';
+
   // create array to hold drug names for patient
   //$drugNames=array();
 
@@ -134,16 +152,14 @@
     $error = curl_error($ch);
     curl_close($ch);
 
-    echo "<div style='background-color:yellow; border:1px solid black'>";
-
     $labTestInfo = array();
     // ---- TO DO ------ if loop to check patient from POST
-    if ($response['data']['patient'] == 'Benny') {
-      //get size of array
-      //$lengthTests=(sizeof($response['data']['0']));
-      //echo print_r($response['data']['drug_prescription']['0']['drug_name']);
-      //for ($i = 0; $i < $lengthDrugPr; $i++) {
+    if ($response['data']['name'] == $_GET['testID']) {
 
+      echo "<div id='journal'>";
+      echo "<table>";
+      echo '<tr>';
+      echo '<th>Lab test</th><th>Datum</th><th>Resultat</th><th>enhet</th><th>Normalvärde</th>';
       array_push($labTestInfo, $response['data']['lab_test_name']);
       array_push($labTestInfo, $response['data']['result_date']);
       // foreach ($labTestInfo as $key => $value) {
@@ -154,17 +170,22 @@
       if (!empty($response['data']['normal_test_items']['0']['normal_range'])) {
         array_push($labTestInfo, $response['data']['normal_test_items']['0']['normal_range']);
       }
-      array_push($labTestInfo, $response['data']['name']);
     }
 
     if (!empty($labTestInfo)) {
-      //echo print_r($labTestInfo);
-      foreach ($labTestInfo as $labtest) {
-        echo "<p>$labtest</p>";
+      echo "<tr>";
+      echo '<td>' . $labTestInfo['0'] . '</td></a>';
+      echo '<td>' . $labTestInfo['1'] . '</td></a>';
+      echo '<td>' . $labTestInfo['2'] . '</td></a>';
+      if (!empty($labTestInfo['3']['4'])) {
+        echo '<td>' . $labTestInfo['3'] . '</td></a>';
+        echo '<td>' . $labTestInfo['4'] . '</td></a>';
+        echo '</tr>';
       }
     }
   }
-
+  echo '</tr>';
+  echo "</table>";
   echo "</div>";
 
 
@@ -179,11 +200,6 @@
     echo "<hr>";
     echo "</div>";
   }
-
-  echo "<div style='background-color:lightgray; border:1px solid black'>";
-  echo '$response<br><pre>';
-  echo print_r($response) . "</pre><br>";
-  echo "</div>";
   ?>
 </pre>
 
