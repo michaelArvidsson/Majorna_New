@@ -130,7 +130,7 @@
     echo "<div style='background-color:yellow; border:1px solid black'>";
 
 
-    // ---- TO DO ------ if loop to check patient from POST
+    // Set session ID
     if ($response['data']['patient'] == 'Benny') {
       //get size of array
       $lengthDrugPr = (sizeof($response['data']['drug_prescription']));
@@ -140,9 +140,6 @@
         //add more info that is displayed with drug name
         array_push($drugNames, $response['data']['drug_prescription'][$i]['dosage']);
         array_push($drugNames, substr($response['data']['drug_prescription'][$i]['creation'], 0, 11));
-        //pull out first 10 characters in string on creation date to display
-        //https://www.codegrepper.com/code-examples/delphi/get+the+first+10+characters+of+a+string+in+php
-        //$result = substr("Hello How are you", 0, 5); //first 5 chars "Hello"
       }
     }
   }
@@ -161,34 +158,19 @@ echo '<select name="drug">';
   //print all drugs with dosage
   //change from drop down here to <ol>, <li> links
   $lengthDrugNames = sizeof($drugNames);
-  echo print_r($drugNames);
-  echo '<form action="Get PRescriptionlist.php" method="POST">';
-  echo '<select name="drug">';
+  //echo print_r($drugNames);
+
   for ($i = 0; $i < $lengthDrugNames; $i++) {
-    echo '<option value=' . $drugNames[$i] . ' >' . $drugNames[$i] . '</option>';
+
+    echo '<p>' . $drugNames[$i] . '</p>';
   }
   // could use info in $response['data']['drug_prescription'][$i]['period'] to calculate when Rx is no longer active
   // and only display active Rx - NOT IMPLEMENTED NOW
 
-  // Dropdown prescription 
   // ---- TO DO ------ create hidden input for sending patient to prescription
-  /*
-  echo '<form action="Get PRescriptionlist.php" method="POST">';
-    echo '<select name="drug">';
-  for ($i = 0; $i < $lengthDrugPr; $i++) {
-    echo '<option value=' . $response['data']['drug_prescription'][$i]['drug_name'] . ' >' . $response['data']['drug_prescription'][$i]['drug_name'] . '</option>';
-  }*/
-  //$encounter = $arr_encounter[1];
 
 
-  /*     foreach ($value as $valuekey => $valuevalue) {
-      echo $valuekey . " " . $valuevalue . "<br>";
-      //echo '<option value=' . $valuevalue['drug_name'] . ' >' . $valuevalue['drug_name'] . '</option>';
-    } */
 
-  //echo '<option value=' . $response['data']['drug_prescription']['0']['drug_name'] . ' >' . $response['data']['drug_prescription']['0']['drug_name'] . '</option>';
-  echo '</select>';
-  echo '</form>';
   echo "</div>";
 
 
