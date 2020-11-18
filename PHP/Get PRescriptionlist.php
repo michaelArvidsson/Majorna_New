@@ -106,7 +106,7 @@
 
   // create array to hold drug names for patient
   $drugNames = array();
-
+  echo "<div style='background-color:yellow; border:1px solid black'>";
   foreach ($arr_encounter as $key => $value) {
     // assign variable url to pull out each encounter
     $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter/' . $value);
@@ -127,7 +127,7 @@
     $error = curl_error($ch);
     curl_close($ch);
 
-    echo "<div style='background-color:yellow; border:1px solid black'>";
+
 
 
     // Set session ID
@@ -136,6 +136,7 @@
       $lengthDrugPr = (sizeof($response['data']['drug_prescription']));
       //echo print_r($response['data']['drug_prescription']['0']['drug_name']);
       for ($i = 0; $i < $lengthDrugPr; $i++) {
+
         array_push($drugNames, $response['data']['drug_prescription'][$i]['drug_name']);
         //add more info that is displayed with drug name
         array_push($drugNames, $response['data']['drug_prescription'][$i]['dosage']);
@@ -143,17 +144,6 @@
       }
     }
   }
-  /*
-// save array of unique drug names
-$drugNamesUnique = array_unique($drugNames);
-$lengthDrugUnique = sizeof($drugNamesUnique);
-echo print_r($drugNamesUnique);
-echo '<form action="Get PRescriptionlist.php" method="POST">';
-echo '<select name="drug">';
-  for ($i = 0; $i < $lengthDrugUnique; $i++) {
-    echo '<option value=' . $drugNamesUnique[$i] . ' >' . $drugNamesUnique[$i] . '</option>';
-  }
-  */
 
   //print all drugs with dosage
   //change from drop down here to <ol>, <li> links
