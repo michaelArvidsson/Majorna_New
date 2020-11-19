@@ -16,6 +16,15 @@
       letter-spacing: 5;
       font-size: 50px;
     }
+
+    #journal {
+      margin-bottom: 10px;
+      background-color: yellow;
+      border: 1px solid black;
+      padding: 5px;
+      padding-left: 15px;
+
+    }
   </style>
 </head>
 
@@ -71,12 +80,8 @@
     echo "</div>";
   }
 
-  echo "<div style='background-color:lightgray; border:1px solid black'>";
-  echo '$response<br><pre>';
-  echo print_r($response) . "</pre><br>";
-  echo "</div>";
-
   $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter');
+  //?fields=["appointment_time"]&filters=[["Patient%20Appointment","appointment_date","=","'.$hardCodedDay.'"]]');
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
   curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
@@ -106,7 +111,8 @@
 
   // create array to hold drug names for patient
   $drugNames = array();
-  echo "<div style='background-color:yellow; border:1px solid black'>";
+  echo "<div id='journal'>";
+  echo "<table>";
   foreach ($arr_encounter as $key => $value) {
     // assign variable url to pull out each encounter
     $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter/' . $value);
@@ -129,31 +135,41 @@
 
 
 
-
     // Set session ID
     if ($response['data']['patient'] == 'Benny') {
       //get size of array
       $lengthDrugPr = (sizeof($response['data']['drug_prescription']));
       //echo print_r($response['data']['drug_prescription']['0']['drug_name']);
-      for ($i = 0; $i < $lengthDrugPr; $i++) {
-
-        array_push($drugNames, $response['data']['drug_prescription'][$i]['drug_name']);
-        //add more info that is displayed with drug name
-        array_push($drugNames, $response['data']['drug_prescription'][$i]['dosage']);
-        array_push($drugNames, substr($response['data']['drug_prescription'][$i]['creation'], 0, 11));
+      foreach ($response['data']['drug_prescription'] as $prescription) {
+        echo "<tr>";
+        echo "<td>" . $prescription['drug_name'] . "</td>";
+        echo "<td>" . $prescription['dosage'] . "</td>";
+        echo "<td>" . substr($prescription['creation'], 0, 11) . "</td>";
+        echo "<td>";
+        echo "<form method='POST' action='Get_Prescriptionlist.php'>";
+        echo "<input type=hidden name='drug_name' value=" . $prescription['drug_name'] . "/>";
+        echo "<input type=hidden name='dosage' value=" . $prescription['dosage'] . "/>";
+        echo "<input type=hidden name='creation' value=" . $prescription['creation'] . "/>";
+        echo "<input type=submit name=submit value=submit>";
+        echo "</form></td>";
       }
+      echo "</tr>";
     }
   }
-
+  echo "</table>";
+  echo "<pre>";
+  echo print_r($_POST);
+  echo "</pre>";
+  //<input type="hidden" name="U_VerktygsID" value="' . $row['VerktygsID'] . '" >';
   //print all drugs with dosage
   //change from drop down here to <ol>, <li> links
-  $lengthDrugNames = sizeof($drugNames);
+  //$lengthDrugNames = sizeof($drugNames);
   //echo print_r($drugNames);
 
-  for ($i = 0; $i < $lengthDrugNames; $i++) {
+  /* for ($i = 0; $i < $lengthDrugNames; $i++) {
 
     echo '<p>' . $drugNames[$i] . '</p>';
-  }
+  } */
   // could use info in $response['data']['drug_prescription'][$i]['period'] to calculate when Rx is no longer active
   // and only display active Rx - NOT IMPLEMENTED NOW
 
@@ -176,10 +192,6 @@
     echo "</div>";
   }
 
-  echo "<div style='background-color:lightgray; border:1px solid black'>";
-  echo '$response<br><pre>';
-  echo print_r($response) . "</pre><br>";
-  echo "</div>";
   ?>
 </pre>
 

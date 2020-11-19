@@ -165,7 +165,9 @@
       array_push($Journals, $response['data']['patient']);
       array_push($Journals, $response['data']['encounter_date']);
       array_push($Journals, $response['data']['symptoms']['0']['complaint']);
-      array_push($Journals, $response['data']['diagnosis']['0']['diagnosis']);
+      if (!empty($response['data']['diagnosis']['0']['diagnosis'])) {
+        array_push($Journals, $response['data']['diagnosis']['0']['diagnosis']);
+      }
       $lengthDrugPr = (sizeof($response['data']['drug_prescription']));
       //echo print_r($response['data']['drug_prescription']['0']['drug_name']);
       for ($i = 0; $i < $lengthDrugPr; $i++) {
@@ -180,8 +182,10 @@
       echo '<p>Besöksdatum: ' . $encounterJournal['encounter_date'] . '</p>';
       echo '<p>Vårdgivare: ' . $encounterJournal['practitioner_name'] . '</p>';
       echo '<p>Patient: ' . $encounterJournal['patient'] . '</p>';
-      echo '<p>Symptom: ' . $Journals['4'] . '</p>';
-      echo '<p>Diagnos: ' . $Journals['5'] . '</p>';
+      if (!empty($journals)) {
+        echo '<p>Symptom: ' . $Journals['4'] . '</p>';
+        echo '<p>Diagnos: ' . $Journals['5'] . '</p>';
+      }
       if (!empty($drugNames)) {
         echo '<p>Förskrivet recept: ' . $drugNames['0'] . '</p>';
         echo '<p>Förskriven dos: ' . $drugNames['1'] . '</p>';
