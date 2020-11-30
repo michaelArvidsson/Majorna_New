@@ -17,6 +17,12 @@
       font-size: 50px;
     }
 
+    h4 {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      text-decoration: underline;
+    }
+
     td,
     tr {
       padding-right: 10px;
@@ -36,11 +42,26 @@
     }
 
     #journal {
+
+      margin: auto;
       margin-bottom: 10px;
       background-color: yellow;
       border: 1px solid black;
       padding: 5px;
       padding-left: 15px;
+      width: 600px;
+
+    }
+
+    #journal2 {
+
+      margin: auto;
+      margin-bottom: 10px;
+      background-color: lightgreen;
+      border: 1px solid black;
+      padding: 5px;
+      padding-left: 15px;
+      width: 600px;
 
     }
   </style>
@@ -98,6 +119,28 @@
     echo "</div>";
   }
 
+  if (isset($_POST['submit'])) {
+    $pdo = new PDO('mysql:dbname=a18micar_dbk2020;host=localhost', 'sqllab', 'Tomten2009');
+
+    $querystring = 'INSERT INTO PrescriptionRequest (patient,drug_name,dosage,creation) VALUES(:patient,:drug_name,:dosage,:creation);';
+    $stmt = $pdo->prepare($querystring);
+    $stmt->bindParam(':patient', $_POST['patient']);
+    $stmt->bindParam(':drug_name', $_POST['drug_name']);
+    $stmt->bindParam(':dosage', $_POST['dosage']);
+    $stmt->bindParam(':creation', $_POST['creation']);
+    $stmt->execute();
+
+    echo "<div id='journal2'>";
+    echo "<p>Din receptförfrågan är skickad till läkare</p>";
+    echo "<p>Du meddelas när ditt recept finns att hämta på närmaste apotek</p>";
+    echo "<form method='POST' action='Get_Prescriptionlist copy.php'>";
+    echo "<label>Vill du förnya ytterligare recept? </label><button onClick='window.location.reload();'>JA</button>";
+    echo "<button onClick='window.location.reload();'>NEJ</button>";
+    echo "</form>";
+    echo "</div>";
+  }
+
+
   $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter');
   //?fields=["appointment_time"]&filters=[["Patient%20Appointment","appointment_date","=","'.$hardCodedDay.'"]]');
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
@@ -122,17 +165,18 @@
   $lengthEncArr = sizeof($response['data']);
   $arr_encounter = array();
   for ($i = 0; $i < $lengthEncArr; $i++) {
-    echo $response["data"][$i]["name"];
+    //echo $response["data"][$i]["name"];
     array_push($arr_encounter, $response["data"][$i]["name"]);
   }
-  echo print_r($arr_encounter);
+  //echo print_r($arr_encounter);
 
   // create array to hold drug names for patient
   $drugNames = array();
-  echo "<div id='journal'>";
-  echo "<table>";
-  echo '<th>Medicin</th><th></th><th>Dosering</th><th>Antal förskrivna uttag - Giltigt t.o.m</th>';
+  $prescription;
+
   foreach ($arr_encounter as $key => $value) {
+    echo "<div id='journal'>";
+
     // assign variable url to pull out each encounter
     $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter/' . $value);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
@@ -160,54 +204,27 @@
       $lengthDrugPr = (sizeof($response['data']['drug_prescription']));
       //echo print_r($response['data']['drug_prescription']['0']['drug_name']);
       foreach ($response['data']['drug_prescription'] as $prescription) {
-        echo "<tr>";
-        echo "<td>" . $prescription['drug_name'] . "</td>";
-        echo "<td>" . $prescription['dosage_form'] . "</td>";
-        echo "<td>" . $prescription['dosage'] . "</td>";
-        echo "<td>" . $prescription['comment'] . "</td>";
+        echo "<h4>Medicin:</h4>";
+        echo "<span>" . $prescription['drug_name'] .  "</span>";
+        echo "<span>&nbsp;</span>";
+        echo "<span>" . $prescription['dosage_form'] . "</span>";
+        echo "<h4>Dosering:</h4>";
+        echo "<span>" . $prescription['dosage'] . "</span>";
+        echo "<h4>Utskrivet av</h4>";
+        echo "<span>Julia Isaias</span>";
+        echo "<h4>Totalt förskrivna Uttag - Giltig t.o.m:</h4>";
+        echo "<span>" . $prescription['comment'] . "</span>";
         //echo "<td>" . substr($prescription['creation'], 0, 11) . "</td>";
         if (!isset($_POST['drug_name'])) {
-          echo "<td style='padding:0px; vertical-align:center;'>";
-          echo "<form method='POST' action='Get_Prescriptionlist.php'>";
+          echo "<form method='POST' action='Get_Prescriptionlist copy.php'>";
           echo "<input type=hidden name='drug_name' value=" . $prescription['drug_name'] . "/>";
           echo "<input type=hidden name='dosage' value=" . $prescription['dosage'] . "/>";
           echo "<input type=hidden name='creation' value=" . $prescription['creation'] . "/>";
-          echo "<input style='padding:0px; margin-top:10px;' type=submit name=submit value=submit>";
+          echo "<input style='padding:0px; margin-top:10px;' type=submit name=submit value=Förnya recept>";
           echo "</form></td>";
         }
       }
-      echo "</tr>";
     }
-  }
-  echo "</table>";
-  /* echo "<pre>";
-  echo print_r($_POST);
-  echo "</pre>"; */
-
-  // could use info in $response['data']['drug_prescription'][$i]['period'] to calculate when Rx is no longer active
-  // and only display active Rx - NOT IMPLEMENTED NOW
-  // ---- TO DO ------ create hidden input for sending patient to prescription
-  echo "</div>";
-
-  $pdo = new PDO('mysql:dbname=a18micar_dbk2020;host=localhost', 'sqllab', 'Tomten2009');
-
-  if (isset($_POST['submit'])) {
-
-    $querystring = 'INSERT INTO PrescriptionRequest (patient,drug_name,dosage,creation) VALUES(:patient,:drug_name,:dosage,:creation);';
-    $stmt = $pdo->prepare($querystring);
-    $stmt->bindParam(':patient', $_POST['patient']);
-    $stmt->bindParam(':drug_name', $_POST['drug_name']);
-    $stmt->bindParam(':dosage', $_POST['dosage']);
-    $stmt->bindParam(':creation', $_POST['creation']);
-    $stmt->execute();
-
-    echo "<div id='journal'>";
-    echo "<p>Din receptförfrågan är skickad till läkare</p>";
-    echo "<p>Du meddelas när ditt recept finns att hämta på närmaste apotek</p>";
-    echo "<form method='POST' action='Get_Prescriptionlist.php'>";
-    echo "<label>Vill du förnya ytterligare recept? </label><button onClick='window.location.reload();'>JA</button>";
-    echo "<button onClick='window.location.reload();'>NEJ</button>";
-    echo "</form>";
     echo "</div>";
   }
 
@@ -224,6 +241,7 @@
   }
 
   ?>
+
 </pre>
 
 
