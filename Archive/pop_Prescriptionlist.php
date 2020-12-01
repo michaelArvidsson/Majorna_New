@@ -17,6 +17,12 @@
       font-size: 50px;
     }
 
+    h4 {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      text-decoration: underline;
+    }
+
     td,
     tr {
       padding-right: 10px;
@@ -33,6 +39,30 @@
     table {
       border-collapse: collapse;
       margin: 10px;
+    }
+
+    #journal {
+
+      margin: auto;
+      margin-bottom: 10px;
+      background-color: yellow;
+      border: 1px solid black;
+      padding: 5px;
+      padding-left: 15px;
+      width: 600px;
+
+    }
+
+    #journal2 {
+
+      margin: auto;
+      margin-bottom: 10px;
+      background-color: lightgreen;
+      border: 1px solid black;
+      padding: 5px;
+      padding-left: 15px;
+      width: 600px;
+
     }
   </style>
 </head>
@@ -89,17 +119,30 @@
     echo "</div>";
   }
 
-  echo "<div style='background-color:lightgray; border:1px solid black'>";
-  echo '$response<br><pre>';
-  echo print_r($response) . "</pre><br>";
-  echo "</div>";
-  print_r($_POST);
-  // Change HArdcoded "Benny" to Session
-  if ($_POST['vidimera'] == '1') {
-    $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter?filters=[["patient","=","Benny"],["docstatus","=","1"]]');
-  } else {
-    $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter?filters=[["patient","=","Benny"]]');
+  if (isset($_POST['submit'])) {
+    $pdo = new PDO('mysql:dbname=a18micar_dbk2020;host=localhost', 'sqllab', 'Tomten2009');
+
+    $querystring = 'INSERT INTO PrescriptionRequest (patient,drug_name,dosage,creation) VALUES(:patient,:drug_name,:dosage,:creation);';
+    $stmt = $pdo->prepare($querystring);
+    $stmt->bindParam(':patient', $_POST['patient']);
+    $stmt->bindParam(':drug_name', $_POST['drug_name']);
+    $stmt->bindParam(':dosage', $_POST['dosage']);
+    $stmt->bindParam(':creation', $_POST['creation']);
+    $stmt->execute();
+
+    /*  echo "<div id='journal2'>";
+    echo "<p>Din receptförfrågan är skickad till läkare</p>";
+    echo "<p>Du meddelas när ditt recept finns att hämta på närmaste apotek</p>";
+    echo "<form method='POST' action='Get_Prescriptionlist copy.php'>";
+    echo "<label>Vill du förnya ytterligare recept? </label><button onClick='window.location.reload();'>JA</button>";
+    echo "<button onClick='window.location.reload();'>NEJ</button>";
+    echo "</form>";
+    echo "</div>"; */
   }
+
+
+  $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter');
+  //?fields=["appointment_time"]&filters=[["Patient%20Appointment","appointment_date","=","'.$hardCodedDay.'"]]');
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
   curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
@@ -117,25 +160,23 @@
   $error = curl_error($ch);
   curl_close($ch);
 
-  //foreach ($arr_encounter as $key => $value) {
+
   //create an array of encounter names
-  /* $lengthEncArr = sizeof($response['data']);
+  $lengthEncArr = sizeof($response['data']);
   $arr_encounter = array();
   for ($i = 0; $i < $lengthEncArr; $i++) {
-    echo $response["data"][$i]["name"];
+    //echo $response["data"][$i]["name"];
     array_push($arr_encounter, $response["data"][$i]["name"]);
   }
-  echo print_r($arr_encounter);
+  //echo print_r($arr_encounter);
 
   // create array to hold drug names for patient
   $drugNames = array();
-  echo "<div style='background-color:yellow; border:1px solid black'>";
-  echo "<h3>Patientjournaler för: INSERT_POST </h3>";
-  echo "<table>";
-  echo '<tr>';
-  echo '<th>Journal</th><th>Vårdgivare</th><th>besöksdatum</th>';
+  $prescription;
 
   foreach ($arr_encounter as $key => $value) {
+    echo "<div id='journal'>";
+
     // assign variable url to pull out each encounter
     $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter/' . $value);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
@@ -153,35 +194,39 @@
 
     $error_no = curl_errno($ch);
     $error = curl_error($ch);
-    curl_close($ch); */
-  echo print_r($response);
-  echo "<div style='background-color:yellow; border:1px solid black'>";
-  echo "<h3>Patientjournaler för: INSERT_POST </h3>";
-  echo "<table>";
-  echo '<tr>';
-  echo '<th>Journal</th><th>Vårdgivare</th><th>besöksdatum</th>';
+    curl_close($ch);
 
-  $Journalinfo = array();
 
-  // Set session ID
-  //if ($response['data']['patient'] == 'Benny') {
-  $journalID = $response['data']['name'];
 
-  array_push($Journalinfo, $response['data']['name']);
-  array_push($Journalinfo, $response['data']['practitioner_name']);
-  array_push($Journalinfo, $response['data']['encounter_date']);
-
-  echo "<tr>";
-  echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['0'] . "</td></a>";
-  echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['1'] . "</td></a>";
-  echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['2'] . "</td></a></tr>";
-  echo '</tr>';
-  //}
-  //}
-  echo '</tr>';
-  echo "</table>";
-  echo "</div>";
-
+    // Set session ID
+    if ($response['data']['patient'] == 'Benny') {
+      //get size of array
+      $lengthDrugPr = (sizeof($response['data']['drug_prescription']));
+      //echo print_r($response['data']['drug_prescription']['0']['drug_name']);
+      foreach ($response['data']['drug_prescription'] as $prescription) {
+        echo "<h4>Medicin:</h4>";
+        echo "<span>" . $prescription['drug_name'] .  "</span>";
+        echo "<span>&nbsp;</span>";
+        echo "<span>" . $prescription['dosage_form'] . "</span>";
+        echo "<h4>Dosering:</h4>";
+        echo "<span>" . $prescription['dosage'] . "</span>";
+        echo "<h4>Utskrivet av</h4>";
+        echo "<span>Julia Isaias</span>";
+        echo "<h4>Totalt förskrivna Uttag - Giltig t.o.m:</h4>";
+        echo "<span>" . $prescription['comment'] . "</span>";
+        //echo "<td>" . substr($prescription['creation'], 0, 11) . "</td>";
+        if (!isset($_POST['drug_name'])) {
+          echo "<form method='POST' action='pop_Prescriptionlist.php'>";
+          echo "<input type=hidden name='drug_name' value=" . $prescription['drug_name'] . "/>";
+          echo "<input type=hidden name='dosage' value=" . $prescription['dosage'] . "/>";
+          echo "<input type=hidden name='creation' value=" . $prescription['creation'] . "/>";
+          echo "<input style='padding:0px; margin-top:10px;' type='submit' name='submit' value='Förnya recept' onsubmit='myFunction()'>";
+          echo "</form></td>";
+        }
+      }
+    }
+    echo "</div>";
+  }
 
   if (!empty($error_no)) {
     echo "<div style='background-color:red'>";
@@ -195,13 +240,17 @@
     echo "</div>";
   }
 
-  echo "<div style='background-color:lightgray; border:1px solid black'>";
-  echo '$response<br><pre>';
-  echo print_r($response) . "</pre><br>";
-  echo "</div>";
   ?>
-</pre>
 
+</pre>
+  <script>
+    function myFunction() {
+      //alert("The form was submitted");
+      alert("My alert message body", "Alert Title");
+    }
+  </script>
+
+  <?php print_r($_POST); ?>
 
 </body>
 

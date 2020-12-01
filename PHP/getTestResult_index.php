@@ -34,6 +34,17 @@
       border-collapse: collapse;
       margin: 10px;
     }
+
+    #journal {
+      margin: auto;
+      margin-bottom: 10px;
+      background-color: yellow;
+      border: 1px solid black;
+      padding: 5px;
+      padding-left: 15px;
+      width: 600px;
+
+    }
   </style>
 </head>
 
@@ -92,7 +103,12 @@
   //$ch = curl_init($baseurl . 'api/resource/Lab%20Test/LP-00004');
 
   //get array of all lab tests
-  $ch = curl_init($baseurl . 'api/resource/Lab%20Test');
+  if ($_POST['vidimera'] == '1') {
+    $ch = curl_init($baseurl . 'api/resource/Lab%20Test?filters=[["patient","=","Benny"],["docstatus","=","1"]]');
+  } else {
+    $ch = curl_init($baseurl . 'api/resource/Lab%20Test?filters=[["patient","=","Benny"]]');
+  }
+  //$ch = curl_init($baseurl . 'api/resource/Lab%20Test');
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
   curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
@@ -121,10 +137,11 @@
     array_push($arr_labTests, $response["data"][$i]["name"]);
   }
   //echo print_r($arr_labTests);
-  echo "<div style='background-color:yellow; border:1px solid black'>";
+  echo "<div id='journal'>";
+  echo "<h3>Provresultat för: sessionid </h3>";
   echo "<table>";
   echo '<tr>';
-  echo '<th>Lab test</th><th>Datum</th><th>Status</th>';
+  echo '<th>Lab test</th><th>Datum</th><th>Status</th><th>Status2</th>';
   // create array to hold drug names for patient
   //$drugNames=array();
 
@@ -163,7 +180,12 @@
       echo "<tr>";
       echo "<td><a href='getTestResult.php?testID=" . $testID . "'>" . $labTestInfo['0'] . "</td></a>";
       echo "<td><a href='getTestResult.php?testID=" . $testID . "'>" . $labTestInfo['1'] . "</td></a>";
-      echo "<td><a href='getTestResult.php?testID=" . $testID . "'>" . $labTestInfo['2'] . "</td></a></tr>";
+      echo "<td><a href='getTestResult.php?testID=" . $testID . "'>" . $labTestInfo['2'] . "</td></a>";
+      if ($response['data']['docstatus'] == '1') {
+        echo "<td>Vidimerad</td></tr>";
+      } else {
+        echo "<td style='color:red;'>Ovidimerad</td></tr>";
+      }
     }
   }
   echo '</tr>';

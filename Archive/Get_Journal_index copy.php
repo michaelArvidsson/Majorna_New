@@ -34,17 +34,6 @@
       border-collapse: collapse;
       margin: 10px;
     }
-
-    #journal {
-      margin: auto;
-      margin-bottom: 10px;
-      background-color: yellow;
-      border: 1px solid black;
-      padding: 5px;
-      padding-left: 15px;
-      width: 600px;
-
-    }
   </style>
 </head>
 
@@ -100,6 +89,12 @@
     echo "</div>";
   }
 
+  echo "<div style='background-color:lightgray; border:1px solid black'>";
+  echo '$response<br><pre>';
+  echo print_r($response) . "</pre><br>";
+  echo "</div>";
+  print_r($_POST);
+  // Change HArdcoded "Benny" to Session
   if ($_POST['vidimera'] == '1') {
     $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter?filters=[["patient","=","Benny"],["docstatus","=","1"]]');
   } else {
@@ -122,70 +117,32 @@
   $error = curl_error($ch);
   curl_close($ch);
 
-
-  //create an array of encounter names
-  $lengthEncArr = sizeof($response['data']);
-  $arr_encounter = array();
-  for ($i = 0; $i < $lengthEncArr; $i++) {
-    echo $response["data"][$i]["name"];
-    array_push($arr_encounter, $response["data"][$i]["name"]);
-  }
-
-
-  // create array to hold drug names for patient
-  $drugNames = array();
-  echo "<div id='journal'>";
-  echo "<h3>Patientjournaler för: sessionid </h3>";
+  echo print_r($response);
+  echo "<div style='background-color:yellow; border:1px solid black'>";
+  echo "<h3>Patientjournaler för: INSERT_POST </h3>";
   echo "<table>";
   echo '<tr>';
-  echo '<th>Journal ID</th><th>Vårdgivare</th><th>besöksdatum</th><th>status</th>';
+  echo '<th>Journal</th><th>Vårdgivare</th><th>besöksdatum</th>';
 
-  foreach ($arr_encounter as $key => $value) {
-    // assign variable url to pull out each encounter
-    $ch = curl_init($baseurl . 'api/resource/Patient%20Encounter/' . $value);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+  $Journalinfo = array();
+  foreach ($response['data']['name'] as $journalID) {
+    echo "<div id='journal'>";
 
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
-    curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-    curl_setopt($ch, CURLOPT_COOKIEJAR, $cookiepath);
-    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookiepath);
-    curl_setopt($ch, CURLOPT_TIMEOUT, $tmeout);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    array_push($Journalinfo, $response['data']['name']);
+    array_push($Journalinfo, $response['data']['practitioner_name']);
+    array_push($Journalinfo, $response['data']['encounter_date']);
 
-    $response = curl_exec($ch);
-    $response = json_decode($response, true);
-
-
-    $error_no = curl_errno($ch);
-    $error = curl_error($ch);
-    curl_close($ch);
-
-
-    $Journalinfo = array();
-
-    // Set session ID
-    if ($response['data']['patient'] == 'Benny') {
-      $journalID = $response['data']['name'];
-
-      array_push($Journalinfo, $response['data']['name']);
-      array_push($Journalinfo, $response['data']['practitioner_name']);
-      array_push($Journalinfo, $response['data']['encounter_date']);
-
-      echo "<tr>";
-      echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['0'] . "</td></a>";
-      echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['1'] . "</td></a>";
-      echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['2'] . "</td></a>";
-      if ($response['data']['docstatus'] == '1') {
-        echo "<td>Vidimerad</td></tr>";
-      } else {
-        echo "<td style='color:red;'>Ovidimerad</td></tr>";
-      }
-      echo '</tr>';
-    }
+    echo "<tr>";
+    echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['0'] . "</td></a>";
+    echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['1'] . "</td></a>";
+    echo "<td><a href='Get_Journal.php?journalID=" . $journalID . "'>" . $Journalinfo['2'] . "</td></a></tr>";
+    echo '</tr>';
+    //}
+    //}
+    echo '</tr>';
+    echo "</table>";
+    echo "</div>";
   }
-  echo '</tr>';
-  echo "</table>";
-  echo "</div>";
 
 
   if (!empty($error_no)) {
@@ -199,8 +156,6 @@
     echo "<hr>";
     echo "</div>";
   }
-
-
   ?>
 </pre>
 

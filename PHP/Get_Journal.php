@@ -18,11 +18,13 @@
     }
 
     #journal {
+      margin: auto;
       margin-bottom: 10px;
       background-color: yellow;
       border: 1px solid black;
       padding: 5px;
       padding-left: 15px;
+      width: 600px;
 
     }
   </style>
@@ -127,7 +129,7 @@
     echo $response["data"][$i]["name"];
     array_push($arr_encounter, $response["data"][$i]["name"]);
   }
-  echo print_r($arr_encounter);
+
 
   // create array to hold drug names for patient
   $drugNames = array();
@@ -172,28 +174,38 @@
       //echo print_r($response['data']['drug_prescription']['0']['drug_name']);
       for ($i = 0; $i < $lengthDrugPr; $i++) {
         array_push($drugNames, $response['data']['drug_prescription'][$i]['drug_name']);
+        array_push($drugNames, $response['data']['drug_prescription'][$i]['dosage_form']);
         //add more info that is displayed with drug name
         array_push($drugNames, $response['data']['drug_prescription'][$i]['dosage']);
         array_push($drugNames, substr($response['data']['drug_prescription'][$i]['creation'], 0, 11));
       }
       $lengthDrugNames = sizeof($drugNames);
       // Add if empty - Show nothing
-      echo '<p style="font-weight:900;">Journal: ' . $encounterJournal['name'] . '</p>';
+      echo '<h4>Journal: ' . $encounterJournal['name'] . '</h4>';
       echo '<p>Besöksdatum: ' . $encounterJournal['encounter_date'] . '</p>';
       echo '<p>Vårdgivare: ' . $encounterJournal['practitioner_name'] . '</p>';
       echo '<p>Patient: ' . $encounterJournal['patient'] . '</p>';
-      if (!empty($journals)) {
+      if (!empty($Journals)) {
         echo '<p>Symptom: ' . $Journals['4'] . '</p>';
         echo '<p>Diagnos: ' . $Journals['5'] . '</p>';
       }
       if (!empty($drugNames)) {
-        echo '<p>Förskrivet recept: ' . $drugNames['0'] . '</p>';
-        echo '<p>Förskriven dos: ' . $drugNames['1'] . '</p>';
-        echo '<p>Förskrivningsdatum: ' . $drugNames['2'] . '</p>';
+        echo '<span>Förskrivet recept: ' . $drugNames['0'] . '</span>';
+        echo '<span> - </span>';
+        echo '<span>' . $drugNames['1'] . '</span>';
+        echo '<p>Förskriven dos: ' . $drugNames['2'] . '</p>';
+        echo '<p>Förskrivningsdatum: ' . $drugNames['3'] . '</p>';
+      }
+      if ($response['data']['docstatus'] == '1') {
+        echo "<h4>Vidimerad</h4></tr>";
+      } else {
+        echo "<h4 style='color:red;'>Ovidimerad</h4></tr>";
       }
     }
+
     echo "</div>";
   }
+
 
 
   if (!empty($error_no)) {
