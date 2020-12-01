@@ -133,7 +133,7 @@
     echo "<div id='journal2'>";
     echo "<p>Din receptförfrågan är skickad till läkare</p>";
     echo "<p>Du meddelas när ditt recept finns att hämta på närmaste apotek</p>";
-    echo "<form method='POST' action='Get_Prescriptionlist copy.php'>";
+    echo "<form method='POST' action='Get_Prescriptionlist.php'>";
     echo "<label>Vill du förnya ytterligare recept? </label><button onClick='window.location.reload();'>JA</button>";
     echo "<button onClick='window.location.reload();'>NEJ</button>";
     echo "</form>";
@@ -216,7 +216,7 @@
         echo "<span>" . $prescription['comment'] . "</span>";
         //echo "<td>" . substr($prescription['creation'], 0, 11) . "</td>";
         if (!isset($_POST['drug_name'])) {
-          echo "<form method='POST' action='Get_Prescriptionlist copy.php'>";
+          echo "<form method='POST' action='Get_Prescriptionlist.php'>";
           echo "<input type=hidden name='drug_name' value=" . $prescription['drug_name'] . "/>";
           echo "<input type=hidden name='dosage' value=" . $prescription['dosage'] . "/>";
           echo "<input type=hidden name='creation' value=" . $prescription['creation'] . "/>";
