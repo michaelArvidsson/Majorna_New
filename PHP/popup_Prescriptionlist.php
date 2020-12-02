@@ -128,6 +128,7 @@
 
     $querystring = 'INSERT INTO PrescriptionRequest (patient,drug_name,dosage,creation) VALUES(:patient,:drug_name,:dosage,:creation);';
     $stmt = $pdo->prepare($querystring);
+    // Change  $_POST['patient'] to SESSION_ID
     $stmt->bindParam(':patient', $_POST['patient']);
     $stmt->bindParam(':drug_name', $_POST['drug_name']);
     $stmt->bindParam(':dosage', $_POST['dosage']);
@@ -211,9 +212,9 @@
         echo "<span>" . $prescription['comment'] . "</span><br>";
       }
       echo '<form method="POST" action"popup_Prescriptionlist.php" onsubmit="myFunction()">';
-      echo "<input type=hidden name='drug_name' value=" . $prescription['drug_name'] . "/>";
-      echo "<input type=hidden name='dosage' value=" . $prescription['dosage'] . "/>";
-      echo "<input type=hidden name='creation' value=" . $prescription['creation'] . "/>";
+      echo '<input type=hidden name="drug_name" value="' . $prescription['drug_name'] . '"/>';
+      echo '<input type=hidden name="dosage" value="' . $prescription['dosage'] . '"/>';
+      echo '<input type=hidden name="creation" value="' . $prescription['creation'] . '"/>';
       echo "<input style='padding:0px; margin-top:10px;' type=submit name=submit value=Förnya recept>";
       echo "</form>";
     }
