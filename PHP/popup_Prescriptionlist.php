@@ -64,55 +64,6 @@
       width: 600px;
 
     }
-
-    /* The Modal (background) */
-    .modal {
-      display: none;
-      /* Hidden by default */
-      position: fixed;
-      /* Stay in place */
-      z-index: 1;
-      /* Sit on top */
-      padding-top: 50px;
-      /* Location of the box */
-      left: 0;
-      top: 0;
-      width: 100%;
-      /* Full width */
-      height: 100%;
-      /* Full height */
-      overflow: auto;
-      /* Enable scroll if needed */
-      background-color: rgb(0, 0, 0);
-      /* Fallback color */
-      background-color: rgba(0, 0, 0, 0.4);
-      /* Black w/ opacity */
-    }
-
-    /* Modal Content */
-    .modal-content {
-      background-color: #fefefe;
-      margin: auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 40%;
-      box-shadow: 0, 0, 3, 5;
-    }
-
-    /* The Close Button */
-    /*    .close {
-      color: #aaaaaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-    } */
-
-    .close:hover,
-    .close:focus {
-      color: #000;
-      text-decoration: none;
-      cursor: pointer;
-    }
   </style>
 
 
@@ -170,7 +121,8 @@
     echo "<hr>";
     echo "</div>";
   }
-  echo print_r($_POST);
+
+
   if (isset($_POST['submit'])) {
     $pdo = new PDO('mysql:dbname=a18micar_dbk2020;host=localhost', 'sqllab', 'Tomten2009');
 
@@ -258,10 +210,18 @@
         echo "<h4>Totalt förskrivna Uttag - Giltig t.o.m:</h4>";
         echo "<span>" . $prescription['comment'] . "</span><br>";
       }
-      echo "<button id='myBtn' style='margin-top:5px;'>Förnya</button>";
+      echo '<form method="POST" action"popup_Prescriptionlist.php" onsubmit="myFunction()">';
+      echo "<input type=hidden name='drug_name' value=" . $prescription['drug_name'] . "/>";
+      echo "<input type=hidden name='dosage' value=" . $prescription['dosage'] . "/>";
+      echo "<input type=hidden name='creation' value=" . $prescription['creation'] . "/>";
+      echo "<input style='padding:0px; margin-top:10px;' type=submit name=submit value=Förnya recept>";
+      echo "</form>";
     }
     echo "</div>";
   }
+  echo "<div style'background-color: lightgreen; width: 200px;'>";
+  echo print_r($_POST);
+  echo "<div>";
 
   if (!empty($error_no)) {
     echo "<div style='background-color:red'>";
@@ -276,52 +236,13 @@
   }
 
   ?>
-  <!-- The Modal -->
-<div id="myModal" class="modal">
-
-  <!-- Modal content -->
-  <div class="modal-content">
-    <!-- <span class="close">&times;</span> -->
-    <?php
-    echo "<h3 style='text-align:center;'>Din receptförfrågan är skickad till läkare</h3>";
-    echo "<h3 style='text-align:center;'>Du meddelas när ditt recept finns att hämta på närmaste apotek</h3>";
-    echo "<form method='POST' action='Modal_Prescriptionlist copy 2.php'>";
-    echo "<input type=hidden name='drug_name' value=" . $prescription['drug_name'] . "/>";
-    echo "<input type=hidden name='dosage' value=" . $prescription['dosage'] . "/>";
-    echo "<input type=hidden name='creation' value=" . $prescription['creation'] . "/>";
-    echo "<input style='padding:0px; margin-top:10px; margin:auto;' type=submit name=submit value=Stäng recept>";
-    echo "</form></td>";
-    ?>
-  </div>
 
 </div>
 
 </pre>
   <script>
-    // Get the modal
-    var modal = document.getElementById("myModal");
-
-    // Get the button that opens the modal
-    var btn = document.getElementById("myBtn");
-
-    // Get the <span> element that closes the modal
-    //var span = document.getElementsByClassName("close")[0];
-
-    // When the user clicks the button, open the modal 
-    btn.onclick = function() {
-      modal.style.display = "block";
-    }
-
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-      modal.style.display = "none";
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-      if (event.target == modal) {
-        modal.style.display = "none";
-      }
+    function myFunction() {
+      alert("Din receptförfrågan är skickad till läkare\nDu meddelas när ditt recept finns att hämta på närmaste apotek");
     }
   </script>
 

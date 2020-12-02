@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <title>Majorna vårdcentral</title>
   <style>
     body {
@@ -52,86 +55,12 @@
       width: 600px;
 
     }
-
-    #journal2 {
-
-      margin: auto;
-      margin-bottom: 10px;
-      background-color: lightgreen;
-      border: 1px solid black;
-      padding: 5px;
-      padding-left: 15px;
-      width: 600px;
-
-    }
-
-    .hover_bkgr_fricc {
-      background: rgba(0, 0, 0, .4);
-      cursor: pointer;
-      display: none;
-      height: 100%;
-      position: fixed;
-      text-align: center;
-      top: 0;
-      width: 100%;
-      z-index: 10000;
-    }
-
-    .hover_bkgr_fricc .helper {
-      display: inline-block;
-      height: 100%;
-      vertical-align: middle;
-    }
-
-    .hover_bkgr_fricc>div {
-      background-color: #fff;
-      box-shadow: 10px 10px 60px #555;
-      display: inline-block;
-      height: auto;
-      max-width: 551px;
-      min-height: 100px;
-      vertical-align: middle;
-      width: 60%;
-      position: relative;
-      border-radius: 8px;
-      padding: 15px 5%;
-    }
-
-    .popupCloseButton {
-      background-color: #fff;
-      border: 3px solid #999;
-      border-radius: 50px;
-      cursor: pointer;
-      display: inline-block;
-      font-family: arial;
-      font-weight: bold;
-      position: absolute;
-      top: -20px;
-      right: -20px;
-      font-size: 25px;
-      line-height: 30px;
-      width: 30px;
-      height: 30px;
-      text-align: center;
-    }
-
-    .popupCloseButton:hover {
-      background-color: #ccc;
-    }
-
-    .trigger_popup_fricc {
-      cursor: pointer;
-      font-size: 20px;
-      margin: 20px;
-      display: inline-block;
-      font-weight: bold;
-    }
   </style>
 </head>
 
 <body>
   <h1>välkommen till Majornas Vårdcentral</h1>
-  <pre>
+
   <?php
   ini_set('display_errors', 1);
   ini_set('display_startup_errors', 1);
@@ -297,29 +226,42 @@
 
   ?>
 
-</pre>
-  <a class="trigger_popup_fricc">Click here to show the popup</a>
 
-  <div class="hover_bkgr_fricc">
-    <span class="helper"></span>
-    <div>
-      <div class="popupCloseButton">&times;</div>
-      <p>Add any HTML content<br />inside the popup box!</p>
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Proccess Payment</h4>
+        </div>
+        <div class="modal-body">
+          "Your about to make a online payment. Click 'Edit' to review the data before proceeding or click 'Continue' to confirm the details for payment."
+          <button class="btn btn-default" data-dismiss="modal">Edit</button>
+          <button class="btn btn-primary" id="continuebtn">Continue</button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
   </div>
 
 
 </body>
 <script>
-  (window).load(function() {
-    (".trigger_popup_fricc").click(function() {
-      ('.hover_bkgr_fricc').show();
+  $('document').ready(function() {
+
+    $('#payBtn').on('click', function(e) {
+      e.preventDefault();
+      $('#myModal').modal('toggle');
+
     });
-    ('.hover_bkgr_fricc').click(function() {
-      ('.hover_bkgr_fricc').hide();
-    });
-    ('.popupCloseButton').click(function() {
-      ('.hover_bkgr_fricc').hide();
+
+    $('#continuebtn').on('click', function() {
+
+      $('form').submit();
     });
   });
 </script>
